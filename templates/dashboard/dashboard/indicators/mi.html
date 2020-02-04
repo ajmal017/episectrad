@@ -1,0 +1,75 @@
+<p>
+    Let’s say we apply the Mass Index using the default settings. The Mass Index should not be used in isolation, so must be used as part of a broader system. Therefore, let’s use it in the context of pairing it with a moving average crossover technique in order to generate our trade signals.
+    <br>
+    We will use a 50-period simple moving average (SMA) and a 21-period SMA to generate signals.
+    <ul>
+        <li>When the 21-period (“fast”, orange line) SMA is above the 50-period (“slow”, blue line) SMA this will define for us an uptrend.</li>
+        <li>When the 50-period (“slow”, blue line) SMA is above the 21-period (“fast”, orange line) SMA, this will define a downtrend.</li>
+    </ul>
+    Therefore, if we receive a confirmation signal from the Mass Index, we would wait until the SMAs cross over in order to produce our trade entry signal.
+    <br>
+    To ensure that our signal is still reliable, we could institute a rule saying that any trade needs to be taken with the trend, as denoted by both the fast and slow SMAs.
+    <br>
+    Namely, if both are positively sloped, we would be biased toward long trades. If both are negatively sloped, we would be biased toward short trades.
+    <br>
+    For simplicity, we will only take these trades upon the original rules delineated by the indicator’s developer. Namely, if the Mass Index moves above 27 and subsequently falls below 26.5, we will take a trade in whichever direction is dictated by the SMAs as described above.
+</p>
+<div class="row paramrow">
+    <div class="col-sm-5 text-center">
+        <label for="overbought">
+            Overbought
+        </label>
+    </div>
+    <div class="col-sm-5 text-center">
+        <input id="overbought" name="ovb" value="{{ SignalInputs.ovb }}"/>
+    </div>
+</div>
+
+<div class="row paramrow mb-4">
+    <div class="col-sm-5 text-center">
+        <label for="oversold">
+            Oversold
+        </label>
+    </div>
+    <div class="col-sm-5 text-center">
+        <input id="oversold" name="ovs" value="{{ SignalInputs.ovs }}"/>
+    </div>
+</div>
+
+<button type="button" class="btn_signal" data-letter="{{ tii_letter }}">Trigger Signal</button>
+<button type="button" class="btn_optimal" data-letter="{{ tii_letter }}">Optimal Setting</button>
+
+<div class="row mt-4">
+    <div class="col-sm-12" id="winlossratio">
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-sm-12" id="bestparams_result">
+    </div>
+</div>
+<script>
+$('.btn_signal').click(function () {
+    $.ajax({
+        url: '/triggersignal/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}', ovb: $('#overbought').val(), ovs: $('#oversold').val()},
+        success: function(data) {
+            widget.createSignalShape(data.signal_graph);
+            $('#winlossratio').text('Win/Loss Ratio: ' + data.traderet.winlossratio);
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+
+$('.btn_optimal').click(function () {
+    $('#loadingOptTrade').removeClass("d-none");
+    $.ajax({
+        url: '/optimaltrade/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}'},
+        success: function(data) {
+            $('#bestparams_result').html(data.html);
+            $('#loadingOptTrade').addClass("d-none");
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+</script>

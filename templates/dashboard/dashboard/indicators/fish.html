@@ -1,0 +1,75 @@
+<ul>
+    <li>The Fisher Transform attempts to normalize asset prices, thus making turning points in price clearer.</li>
+    <li>Some traders look for extreme readings to signal potential price reversal areas, while others watch for a change in direction of the Fisher Transform.</li>
+    <li>The Fisher Transform formula is typically applied to price, but it can also be applied to other indicators.</li>
+    <li>Asset prices are not normally distributed, so attempts to normalize prices via an indicator may not always provide reliable signals.</li>
+</ul>
+<p>
+The Fisher Transform indicator is unbounded, which means extremes can occur for a long time. An extreme is based on the historical readings for the asset in question. For some assets, a high reading may be seven or eight, while a low reading may be -4. For another asset, these values may differ.
+<br>
+An extreme reading indicates the possibility of a reversal. This should be confirmed by the Fisher Transform changing direction. For example, following a strong price rise and the Fisher Transform reaching an extremely high level, when the Fisher Transform starts to head lower that could signal the price is going to drop, or has already started dropping.
+<br>
+The Fisher Transform frequently has a signal line attached to it. This is a moving average of the Fisher Transform value, so it moves slightly slower than the Fisher Transform line. When the Fisher Transform crosses the trigger line it is used by some traders as a trade signal. For example, when the Fisher Transform drops below the signal line after hitting an extreme high, that could be used as a signal to sell a current long position.
+<br>
+As with many indicators, the Fisher will provide many trade signals. Many of these will not be profitable signals. Therefore, some traders prefer to use the indicator in conjunction with trend analysis. For example, when the price is rising overall, use the Fisher Transform for buy and sell signals, but not for short-sell signals. During a downtrend, use it for short-sell signals and ideas on when to cover.
+</p>
+
+<div class="row paramrow">
+    <div class="col-sm-5 text-center">
+        <label for="overbought">
+            Overbought
+        </label>
+    </div>
+    <div class="col-sm-5 text-center">
+        <input id="overbought" name="ovb" value="{{ SignalInputs.ovb }}"/>
+    </div>
+</div>
+
+<div class="row paramrow mb-4">
+    <div class="col-sm-5 text-center">
+        <label for="oversold">
+            Oversold
+        </label>
+    </div>
+    <div class="col-sm-5 text-center">
+        <input id="oversold" name="ovs" value="{{ SignalInputs.ovs }}"/>
+    </div>
+</div>
+
+<button type="button" class="btn_signal" data-letter="{{ tii_letter }}">Trigger Signal</button>
+<button type="button" class="btn_optimal" data-letter="{{ tii_letter }}">Optimal Setting</button>
+
+<div class="row mt-4">
+    <div class="col-sm-12" id="winlossratio">
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-sm-12" id="bestparams_result">
+    </div>
+</div>
+<script>
+$('.btn_signal').click(function () {
+    $.ajax({
+        url: '/triggersignal/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}', ovb: $('#overbought').val(), ovs: $('#oversold').val()},
+        success: function(data) {
+            widget.createSignalShape(data.signal_graph);
+            $('#winlossratio').text('Win/Loss Ratio: ' + data.traderet.winlossratio);
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+
+$('.btn_optimal').click(function () {
+    $('#loadingOptTrade').removeClass("d-none");
+    $.ajax({
+        url: '/optimaltrade/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}'},
+        success: function(data) {
+            $('#bestparams_result').html(data.html);
+            $('#loadingOptTrade').addClass("d-none");
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+</script>

@@ -1,0 +1,61 @@
+<p>
+The Vortex Indicator was created by Douglas Siepman and Etienne Botes and is composed of two lines, +VI and -VI. +VI represents up trending momentum and -VI represents down trending momentum.
+<br>
+The indicator borrows aspects from other indicators, such as Average True Range and Average Directional Index.
+<br>
+The two indicator lines fluctuate above and below 1.0, spreading further apart during very strong trends and moving close together during weak trends or sideways markets.
+<br>
+When the +VI crosses above -VI, it signals a potential uptrend, and as long as +VI stays above -VI it helps confirm the uptrend.
+<br>
+When -VI crosses above +VI it signals a potential downtrend, and as long as -VI stays above +VI it helps confirm the downtrend.
+<br>
+When +VI and -VI are very close together and hovering near the 1.0 mark, it indicates a short-term lack of trend, and a potential consolidation phase in the stock price.
+</p>
+{% comment %} <div class="row paramrow">
+    <div class="col-sm-5 text-center">
+        <label for="overbought">
+            Range from 1.0
+        </label>
+    </div>
+    <div class="col-sm-5 text-center">
+        <input id="overbought" name="ovb" value="{{ SignalInputs.ovb }}"/>
+    </div>
+</div> {% endcomment %}
+
+<button type="button" class="btn_signal" data-letter="{{ tii_letter }}">Trigger Signal</button>
+<button type="button" class="btn_optimal" data-letter="{{ tii_letter }}">Optimal Setting</button>
+
+<div class="row mt-4">
+    <div class="col-sm-12" id="winlossratio">
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-sm-12" id="bestparams_result">
+    </div>
+</div>
+<script>
+$('.btn_signal').click(function () {
+    $.ajax({
+        url: '/triggersignal/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}'},
+        success: function(data) {
+            widget.createSignalShape(data.signal_graph);
+            $('#winlossratio').text('Win/Loss Ratio: ' + data.traderet.winlossratio);
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+
+$('.btn_optimal').click(function () {
+    $('#loadingOptTrade').removeClass("d-none");
+    $.ajax({
+        url: '/optimaltrade/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}'},
+        success: function(data) {
+            $('#bestparams_result').html(data.html);
+            $('#loadingOptTrade').addClass("d-none");
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+</script>

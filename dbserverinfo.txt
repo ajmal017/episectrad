@@ -1,0 +1,30 @@
+ssh teamviewer@trading.episec.se
+password: RykojFium8
+
+TeamViewer ID: 1104034748
+TeamViewer password: nadewkOv5Oct
+
+Feel free to change the password for ubuntu user `teamviewer`
+
+172.31.5.19
+
+193.34.232.12
+
+
+username : flutterwisp
+password : ShadubNequofInfib!Wyroat7
+
+585tradingepisec.episec.se
+
+
+
+deploy guide
+
+git checkout master
+git pull
+
+and then
+
+docker build . -t episectrad && docker run --name epitrad-li -d --rm --network="host" episectrad python ./manage.py runserver 0.0.0.0:8080
+
+docker stop epitrad-li

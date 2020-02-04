@@ -1,0 +1,59 @@
+<p>
+    <b>100 Line Cross:</b> When the price crosses above or below the 100 line (or the zero line if the indicator in a chart is based on the first type of calculation), it can represent a buy or sell signal respectively. If the price crosses above the 100 line, the price is starting to gain momentum higher. A drop below the 100 line shows the price is losing momentum.
+    <br>
+    The 100 line cross is prone to "whipsaws," meaning the price could move above the line but then right back below it. Traders may wish to filter signals based on the current trend. For example, if a stock is trending higher, buy only when the indicator falls below the 100 line and then rallies back above it. If a stock is trending lower, do a short sale—selling borrowed shares of a stock with the intention of buying them back and returning them later at a lower price—only when it drops back below the line.
+    <br>
+    <b>Crossover:</b> To buy or sell on a crossover, first add a moving average line to your indicator. The moving average is the average closing price over a previous number of days you select.
+    <br>
+    Buy when the momentum indicator crosses above the moving average from below, and sell when the momentum indicator crosses below the moving average from above.
+    <br>
+    This strategy has its problems, too, mainly that same whipsaw issue. That problem can be somewhat alleviated by once again responding only to trade signals in the trending direction. In this case, if the trend is down, make a short trade only after the indicator has moved above the moving average and then drops below. Exit the short trade when the indicator moves above the moving average.
+    <br>
+    You should test various moving average lengths and momentum indicator settings to find a combination that works for your trading style.
+    <br>
+    <b>Divergence:</b> A bullish divergence occurs when the price is moving lower but the lows on the momentum indicator are moving higher. It shows that while the price is dropping, the momentum behind the selling is slowing. If you get a buy signal, this bullish divergence can help confirm it.
+    <br>
+    If the price is moving higher but the highs on the momentum indicator are moving lower, this is a bearish divergence. It shows that while the price is rising, the momentum behind the buying is slowing. If you get a sell signal, this bearish divergence can help confirm it.
+    <br>
+    Divergence should never be used as a trading signal on its own; it should only be used to help confirm trade signals produced by other strategies.
+    <br>
+    You should also be aware of the quirks of this indicator. For example, if the price rises strongly but then moves sideways, the momentum indicator will rise and then start dropping. This is not a bad sign. The indicator is just showing, in a different way, what is visible on the price chart: The price had a lot of momentum and now it doesn't. But that does not necessarily mean the price is going to drop.
+</p>
+
+<button type="button" class="btn_signal" data-letter="{{ tii_letter }}">Trigger Signal</button>
+<button type="button" class="btn_optimal" data-letter="{{ tii_letter }}">Optimal Setting</button>
+
+<div class="row mt-4">
+    <div class="col-sm-12" id="winlossratio">
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-sm-12" id="bestparams_result">
+    </div>
+</div>
+<script>
+$('.btn_signal').click(function () {
+    $.ajax({
+        url: '/triggersignal/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}', ovb: $('#overbought').val(), ovs: $('#oversold').val()},
+        success: function(data) {
+            widget.createSignalShape(data.signal_graph);
+            $('#winlossratio').text('Win/Loss Ratio: ' + data.traderet.winlossratio);
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+
+$('.btn_optimal').click(function () {
+    $('#loadingOptTrade').removeClass("d-none");
+    $.ajax({
+        url: '/optimaltrade/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}'},
+        success: function(data) {
+            $('#bestparams_result').html(data.html);
+            $('#loadingOptTrade').addClass("d-none");
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+</script>

@@ -1,0 +1,45 @@
+<p>
+    The usefulness of the Keltner Channels largely depends on the settings used. Traders first need to decide how they want to use the indicator and then set it up to help accomplish that purpose. Some of the uses of Keltner Channels, addressed above, won't work if the bands are too narrow or too far apart.
+    <br>
+    The bands may also not act as support or resistance, and they may seem to have little forecasting ability at all. This could be due to the settings chosen, but there is also no evidence that the price moving two ATRs or hitting one of the bands will result in a trading opportunity or something significant happening.
+    <br>
+    While Keltner Channels can help identify trend direction, and even provide some trade signals, they are best used in conjunction with price action analysis, fundamentals if trading for the long-term, and other technical indicators.
+</p>
+
+<button type="button" class="btn_signal" data-letter="{{ tii_letter }}">Trigger Signal</button>
+<button type="button" class="btn_optimal" data-letter="{{ tii_letter }}">Optimal Setting</button>
+
+<div class="row mt-4">
+    <div class="col-sm-12" id="winlossratio">
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-sm-12" id="bestparams_result">
+    </div>
+</div>
+<script>
+$('.btn_signal').click(function () {
+    $.ajax({
+        url: '/triggersignal/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}', ovb: $('#overbought').val(), ovs: $('#oversold').val()},
+        success: function(data) {
+            widget.createSignalShape(data.signal_graph);
+            $('#winlossratio').text('Win/Loss Ratio: ' + data.traderet.winlossratio);
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+
+$('.btn_optimal').click(function () {
+    $('#loadingOptTrade').removeClass("d-none");
+    $.ajax({
+        url: '/optimaltrade/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}'},
+        success: function(data) {
+            $('#bestparams_result').html(data.html);
+            $('#loadingOptTrade').addClass("d-none");
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+</script>

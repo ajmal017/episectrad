@@ -1,0 +1,44 @@
+<p>
+In order to use this indicator, you will have to follow both its readings and the price action. Since there is only one line, the signals this indicator is sending are quite straightforward. When the LSMA is moving up and the asset price remains above the moving average and is growing, traders consider opening a BUY position. When the LSMA is moving down and the asset price remains below the moving average and is collapsing, traders consider opening a SELL position. When using this technique, you will have to assess the behavior of the price chart in regard to the moving average, as both are moving quite differently.
+{% comment %} <br> {% endcomment %}
+{% comment %} Least Square Moving Average can also be used in a combination with other moving averages (e. g. SMA, EMA) or a second LSMA with different period. In this case, the two indicators would work as complementary indicators, providing a confirmation for each other’s signals. The crossover between the two can be treated as a bullish/bearish signal depending on the trend direction.  {% endcomment %}
+{% comment %} Finally, LSMA can be used as a part of a more complex trading system when independent indicators of different types are expected to simultaneously provide the entry and exit signals. In this case, LSMA can work as a regular moving average. {% endcomment %}
+</p>
+
+<button type="button" class="btn_signal" data-letter="{{ tii_letter }}">Trigger Signal</button>
+<button type="button" class="btn_optimal" data-letter="{{ tii_letter }}">Optimal Setting</button>
+
+<div class="row mt-4">
+    <div class="col-sm-12" id="winlossratio">
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-sm-12" id="bestparams_result">
+    </div>
+</div>
+<script>
+$('.btn_signal').click(function () {
+    $.ajax({
+        url: '/triggersignal/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}', ovb: $('#overbought').val(), ovs: $('#oversold').val()},
+        success: function(data) {
+            widget.createSignalShape(data.signal_graph);
+            $('#winlossratio').text('Win/Loss Ratio: ' + data.traderet.winlossratio);
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+
+$('.btn_optimal').click(function () {
+    $('#loadingOptTrade').removeClass("d-none");
+    $.ajax({
+        url: '/optimaltrade/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}'},
+        success: function(data) {
+            $('#bestparams_result').html(data.html);
+            $('#loadingOptTrade').addClass("d-none");
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+</script>

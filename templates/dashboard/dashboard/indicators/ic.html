@@ -1,0 +1,69 @@
+<h4>
+    The Cloud: Finding the Trend
+</h4>
+<ul>
+    <li>The trend is upward when price is above the Cloud.</li>
+    <li>The trend is downward when price is below the Cloud.</li>
+    <li>The trend is flat (undetermined) when price is in the Cloud.</li>
+</ul>
+<h4>
+    Trading in an Up-trend
+</h4>
+<p>
+    Signals above the Cloud where the latest Cloud color (ahead) is green are stronger than where the color is red.
+</p>
+<ul>
+    <li>Go long when Tenkan-Sen (blue) crosses above Kijun-Sen (red).</li>
+    <li>Go long when Price crosses above the Kijun-Sen (red) line.</li>
+    <li>Exit when Price crosses below Kijun-Sen (red).</li>
+    <li>Exit when Tenkan-Sen (blue) crosses below Kijun-Sen (red).</li>
+</ul>
+<h4>
+    Trading in a Down-trend
+</h4>
+<p>
+    Signals below the Cloud where the latest Cloud color (ahead) is red are stronger than where the color is green.
+</p>
+<ul>
+    <li>Go short when Tenkan-Sen (blue) crosses below Kijun-Sen (red).
+    <li>Go short when Price crosses below the Kijun-Sen (red) line.
+    <li>Exit when Price crosses above Kijun-Sen (red).
+    <li>Exit when Tenkan-Sen (blue) crosses above Kijun-Sen (red).
+</ul>
+
+<button type="button" class="btn_signal" data-letter="{{ tii_letter }}">Trigger Signal</button>
+
+<div class="row mt-4">
+    <div class="col-sm-12" id="winlossratio">
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-sm-12" id="bestparams_result">
+    </div>
+</div>
+<script>
+$('.btn_signal').click(function () {
+    $.ajax({
+        url: '/triggersignal/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}', ovb: $('#overbought').val(), ovs: $('#oversold').val()},
+        success: function(data) {
+            widget.createSignalShape(data.signal_graph);
+            $('#winlossratio').text('Win/Loss Ratio: ' + data.traderet.winlossratio);
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+
+$('.btn_optimal').click(function () {
+    $('#loadingOptTrade').removeClass("d-none");
+    $.ajax({
+        url: '/optimaltrade/' + $(this).data('letter'),
+        data: {dashboard_id: '{{ dashboard_id}}', tii_id: '{{ tii_id}}'},
+        success: function(data) {
+            $('#bestparams_result').html(data.html);
+            $('#loadingOptTrade').addClass("d-none");
+            $("#signaltab").animate({ scrollTop: $('#signaltab').height() }, 1000);
+        }
+    });
+})
+</script>
